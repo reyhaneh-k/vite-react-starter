@@ -1,0 +1,50 @@
+{
+  "terminalAllowlist": [
+    "git status",
+    "git diff",
+    "git log",
+    "git branch",
+    "git show",
+    "git rev-parse",
+    "git ls-files",
+    "git ls-tree",
+    "ls",
+    "rg",
+    "head",
+    "cat",
+    "pwd",
+    "wc",
+    "pnpm test",
+    "pnpm lint",
+    "pnpm format",
+    "pnpm ai:check",
+    "pnpm ai:test",
+    "pnpm ai:preview",
+    "pnpm ai:context-audit",
+    "pnpm ai:token-audit",
+    "pnpm ai:env-check",
+    "pnpm ai:context7-status",
+    "pnpm ai:proposal-check"
+  ],
+  "mcpAllowlist": [
+    "context7:resolve-library-id",
+    "context7:query-docs"
+  ],
+  "autoRun": {
+    "allow_instructions": [
+      "Allow read-only shell that inspects this workspace: listed git read commands, ls, rg, and project file reads.",
+      "Allow Context7 resolve-library-id and query-docs for public library documentation.",
+      "Allow allowlisted pnpm test/lint/format and ai:* status/check scripts when scoped to this repo."
+    ],
+    "block_instructions": [
+      "Block git push --force, git push --force-with-lease to main/master, and any force-push or history rewrite of shared branches.",
+      "Block destructive filesystem commands such as rm -rf, del /s, rmdir /s, Remove-Item -Recurse -Force targeting anything outside a clearly disposable path inside this workspace.",
+      "Block production deploys, enabling auto-merge, approving/merging MRs/PRs, or changing remote release/CI settings without explicit user approval in the current turn.",
+      "Block git reset --hard, git clean -fd, and commands that discard uncommitted work unless the user explicitly asked for that exact destructive action.",
+      "Block installing or running packages via npx/npm when they write outside the project, modify the global npm cache aggressively, or install global tools.",
+      "Block commands or MCP calls that expose, print, or commit secrets, tokens, .env values, credentials, or production user data.",
+      "Block database/schema migrations or writes against production or shared remote environments.",
+      "Block bare Remove-Item, bare python, and global package installs even if they appear convenient."
+    ]
+  }
+}

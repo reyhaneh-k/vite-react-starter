@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   Tailwind theme — bridges CSS vars → utilities
+   ============================================================================= */
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-canvas-muted: var(--canvas-muted);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans:
+    system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+/* =============================================================================
+   Static design tokens
+   ============================================================================= */
+
+@theme {
+  --color-accent-100: #eef2ff;
+  --color-accent-500: #4f46e5;
+  --color-accent-700: #3730a3;
+
+  --breakpoint-xs: 30rem;
+  --breakpoint-2xs: 20rem;
+}
+
+/* =============================================================================
+   Runtime tokens (static — no theme store)
+   ============================================================================= */
+
+:root {
+  color-scheme: light;
+
+  --canvas: #f4f5f7;
+  --canvas-muted: #e8eaee;
+  --surface: #ffffff;
+  --ink: #1a1d24;
+  --ink-muted: #5c6570;
+  --line: rgb(26 29 36 / 0.12);
+  --accent: var(--color-accent-500);
+  --on-accent: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100dvh;
+}

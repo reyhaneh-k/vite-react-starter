@@ -1,0 +1,105 @@
+import babel from "@rolldown/plugin-babel";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import tailwindcss from "@tailwindcss/vite";
+import react, {
+  reactCompilerPreset,
+} from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import svgr from "vite-plugin-svgr";
+
+const projectName =
+  process.env.SENTRY_PROJECT ?? "vite-react-starter";
+const sentryOrg = process.env.SENTRY_ORG ?? "";
+
+const svgrCommonOptions = {
+  jsxRuntime: "automatic" as const,
+  svgo: true,
+  plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
+  //Accessibility
+  titleProp: true,
+  descProp: true,
+  svgProps: {
+    role: "img",
+  },
+};
+
+export default defineConfig({
+  build: {
+    target: "baseline-widely-available",
+    sourcemap: "hidden",
+    outDir: "build",
+    chunkSizeWarningLimit: 1_000,
+  },
+  resolve: {
+    tsconfigPaths: true,
+  },
+  plugins: [
+    tanstackRouter({
+      target: "react",
+      autoCodeSplitting: true,
+      routesDirectory: "./src/routes",
+      generatedRouteTree: "./src/routeTree.gen.ts",
+      routeFileIgnorePrefix: "-",
+      quoteStyle: "single",
+    }),
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
+    }),
+    svgr({
+      svgrOptions: {
+        ...svgrCommonOptions,
+        svgoConfig: {
+          plugins: [
+            "preset-default",
+            {
+              name: "convertColors",
+              params: {
+                currentColor: true,
+              },
+            },
+          ],
+        },
+        icon: true,
+        dimensions: false,
+      },
+      include: "src/assets/icons/**/*.svg?react",
+    }),
+    svgr({
+      svgrOptions: {
+        ...svgrCommonOptions,
+        svgoConfig: {
+          plugins: ["preset-default"],
+        },
+      },
+      include: "src/assets/svgs/**/*.svg?react",
+    }),
+
+    ...(sentryOrg && process.env.SENTRY_AUTH_TOKEN
+      ? [
+          sentryVitePlugin({
+            org: sentryOrg,
+            project: projectName,
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            sourcemaps: {
+              assets: "./build/**",
+              filesToDeleteAfterUpload: [
+                "./build/**/*.map",
+              ],
+            },
+            reactComponentAnnotation: {
+              enabled: true,
+              _experimentalInjectIntoHtml: true,
+            },
+            release: {
+              name: `${projectName}@${process.env.GITHUB_SHA ?? "local"}`,
+              dist: "1",
+              deploy: { env: "production" },
+            },
+          }),
+        ]
+      : []),
+    tailwindcss(),
+  ],
+});
